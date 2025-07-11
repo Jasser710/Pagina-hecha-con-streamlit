@@ -2,6 +2,7 @@ import streamlit as st
 from database import SessionLocal, engine, Base
 from models import Producto
 from datetime import date
+import pandas as pd
 
 # ✅ 1️⃣ Crear tablas si no existen
 Base.metadata.create_all(bind=engine)
@@ -40,3 +41,33 @@ if st.button("Guardar producto"):
         st.success(f"Producto '{nombre}' guardado correctamente ✅")
     else:
         st.error("Por favor completa todos los campos correctamente.")
+
+st.header("📊 Productos Registrados")
+
+# Opciones de ordenamiento
+sort_by = st.selectbox("Ordenar por", ["Ninguno", "Fecha de Ingreso", "Precio Unitario", "Cantidad en Stock", "Tipo de Cultivo"])
+sort_order = st.radio("Orden", ["Ascendente", "Descendente"])
+
+if st.button("Ver Productos"):
+    db = SessionLocal()
+    productos = db.query(Producto).all()
+    db.close()
+
+    if productos:
+        # Convertir a DataFrame para fácil manipulación y visualización
+        df = pd.DataFrame([p.__dict__ for p in productos])
+        df = df.drop(columns=['_sa_instance_state']) # Eliminar columna interna de SQLAlchemy
+
+        # Aplicar ordenamiento
+        if sort_by == "Fecha de Ingreso":
+            df = df.sort_values(by="fecha_ingreso", ascending=(sort_order == "Ascendente"))
+        elif sort_by == "Precio Unitario":
+            df = df.sort_values(by="precio_unitario", ascending=(sort_order == "Ascendente"))
+        elif sort_by == "Cantidad en Stock":
+            df = df.sort_values(by="cantidad_stock", ascending=(sort_order == "Ascendente"))
+        elif sort_by == "Tipo de Cultivo":
+            df = df.sort_values(by="tipo_cultivo", ascending=(sort_order == "Ascendente"))
+
+        st.dataframe(df)
+    else:
+        st.info("No hay productos registrados aún.")

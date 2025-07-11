@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # 👉 1️⃣ URL de conexión — reemplaza TU_CONTRASEÑA por tu contraseña real de MySQL
-DATABASE_URL = "mysql+mysqlconnector://root:J7102006@localhost/datagrow"
+DATABASE_URL = "mysql+mysqlconnector://root:jason0808@localhost/datagrow"
 
 # 👉 2️⃣ Crear el engine (motor de conexión)
 engine = create_engine(DATABASE_URL)
